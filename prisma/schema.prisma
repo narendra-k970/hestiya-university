@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Users (Learners aur Admins)
+model User {
+  id        String      @id @default(uuid())
+  name      String
+  email     String      @unique
+  password  String
+  phone     String?
+  company   String?
+  role      String      @default("LEARNER") // LEARNER, ADMIN
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  
+  enrolments   Enrolment[]
+  certificates Certificate[]
+}
+
+// 2. Course (Course ki details)
+model Course {
+  id            String   @id @default(uuid())
+  slug          String   @unique
+  title         String
+  subtitle      String?
+  hook          String
+  description   String
+  ilos          String   // JSON string
+  audience      String
+  duration      String
+  prerequisites String?
+  status        String   @default("draft") // draft / published / retired
+  
+  modules       Module[]
+  enrolments    Enrolment[]
+  assessment    Assessment?
+}
+
+// 3. Module (Course ke andar Modules)
+model Module {
+  id       String   @id @default(uuid())
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id])
+  order    Int
+  title    String
+  summary  String
+  
+  lessons  Lesson[]
+}
+
+// 4. Lesson (Module ke andar Lessons)
+model Lesson {
+  id         String   @id @default(uuid())
+  moduleId   String
+  module     Module   @relation(fields: [moduleId], references: [id])
+  order      Int
+  ref        String   // Jaise ki "1.1"
+  title      String
+  body       String   // Text content
+  estMinutes Int
+  
+  slides     Slide[]
+  progress   LessonProgress[]
+}
+
+// 5. Slide (Lesson ke andar Slides)
+model Slide {
+  id         String   @id @default(uuid())
+  lessonId   String
+  lesson     Lesson   @relation(fields: [lessonId], references: [id])
+  order      Int
+  title      String
+  bullets    String   
+  visualNote String?
+}
+
+// 6. Assessment & Questions (MCQ + Short Answer)
+model Assessment {
+  id        String   @id @default(uuid())
+  courseId  String   @unique
+  course    Course   @relation(fields: [courseId], references: [id])
+  passMark  Int
+  
+  questions Question[]
+}
+
+model Question {
+  id            String   @id @default(uuid())
+  assessmentId  String
+  assessment    Assessment @relation(fields: [assessmentId], references: [id])
+  order         Int
+  type          String   // 'mcq' ya 'short_answer'
+  stem          String   // Sawal
+  options       String?  // MCQ options
+  correctOption String?  // Server-side pe secure rahega
+  rubric        String?  // Admin review ke liye
+}
+
+// 7. Enrolment, Progress aur Attempt
+model Enrolment {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  status      String   @default("in_progress")
+  
+  lessonProgress LessonProgress[]
+  attempts       Attempt[]
+  certificate    Certificate?
+}
+
+model LessonProgress {
+  id          String   @id @default(uuid())
+  enrolmentId String
+  enrolment   Enrolment @relation(fields: [enrolmentId], references: [id])
+  lessonId    String
+  lesson      Lesson    @relation(fields: [lessonId], references: [id])
+  completedAt DateTime  @default(now())
+}
+
+model Attempt {
+  id                 String   @id @default(uuid())
+  enrolmentId        String
+  enrolment          Enrolment @relation(fields: [enrolmentId], references: [id])
+  submittedAt        DateTime @default(now())
+  mcqScore           Int
+  shortAnswerText    String?
+  shortAnswerResult  String?
+  reviewerId         String?  // Jis Admin ne review kiya
+  passed             Boolean? 
+}
+
+// 8. Certificate
+model Certificate {
+  id               String     @id @default(uuid())
+  enrolmentId      String?    @unique
+  enrolment        Enrolment? @relation(fields: [enrolmentId], references: [id])
+  userId           String?
+  user             User?      @relation(fields: [userId], references: [id])
+  serial           String     @unique // Non-sequential random ID
+  fileUrl          String?
+  score            String?
+  status           String     @default("Valid")
+  issuedAt         DateTime   @default(now())
+  learnerName      String
+  courseTitle      String
+  verificationSlug String     @unique
+}
+
+// 9. Contact / Inquiries
+model Contact {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  course    String?
+  message   String?
+  createdAt DateTime @default(now())
+}
