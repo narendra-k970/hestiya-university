@@ -88,7 +88,7 @@ export default function Footer({ dark = false }: FooterProps) {
                   </div>
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-[#F59E0B] hover:bg-[#D97706] text-stone-950 font-bold text-sm rounded-xl transition-all shadow-sm transform active:scale-95 whitespace-nowrap"
+                    className="px-6 py-3 bg-[#F59E0B] hover:bg-[#D97706] text-stone-950 font-bold text-sm rounded-xl transition-all shadow-sm transform active:scale-95 whitespace-nowrap cursor-pointer"
                   >
                     Subscribe Free
                   </button>
@@ -153,7 +153,7 @@ export default function Footer({ dark = false }: FooterProps) {
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link 
-                  href="/university/esg-basics-supply-chains" 
+                  href="/courses/esg-basics-supply-chains" 
                   className={`group inline-flex items-center gap-1.5 transition-colors ${
                     dark ? 'text-gray-400 hover:text-emerald-400' : 'text-stone-600 hover:text-emerald-800'
                   }`}
@@ -166,7 +166,7 @@ export default function Footer({ dark = false }: FooterProps) {
               </li>
               <li>
                 <Link 
-                  href="/university/carbon-markets-irec-fundamentals" 
+                  href="/courses/carbon-markets-irec-fundamentals" 
                   className={`group inline-flex items-center gap-1.5 transition-colors ${
                     dark ? 'text-gray-400 hover:text-emerald-400' : 'text-stone-600 hover:text-emerald-800'
                   }`}
@@ -179,7 +179,7 @@ export default function Footer({ dark = false }: FooterProps) {
               </li>
               <li>
                 <Link 
-                  href="/university/esg-basics-supply-chains" 
+                  href="/courses/esg-basics-supply-chains" 
                   className={`transition-colors ${dark ? 'text-gray-400 hover:text-emerald-400' : 'text-stone-600 hover:text-emerald-800'}`}
                 >
                   Tier 1–4 Facility Tracing
@@ -187,7 +187,7 @@ export default function Footer({ dark = false }: FooterProps) {
               </li>
               <li>
                 <Link 
-                  href="/university/esg-basics-supply-chains" 
+                  href="/courses/esg-basics-supply-chains" 
                   className={`transition-colors ${dark ? 'text-gray-400 hover:text-emerald-400' : 'text-stone-600 hover:text-emerald-800'}`}
                 >
                   Wet Processing & ZDHC Audits
@@ -195,7 +195,7 @@ export default function Footer({ dark = false }: FooterProps) {
               </li>
               <li className="pt-1">
                 <Link 
-                  href="/university" 
+                  href="/courses" 
                   className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:text-emerald-900 underline underline-offset-4"
                 >
                   All Course Catalog <ArrowRight className="w-3 h-3" />

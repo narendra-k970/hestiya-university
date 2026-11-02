@@ -99,7 +99,14 @@ export default function AdminCertificatesPage() {
         </div>
         
         <div className="flex items-center gap-3">
-          <span className="px-3.5 py-1.5 bg-white border border-gray-200 text-gray-700 text-xs font-bold rounded-xl shadow-2xs">
+          <Link
+            href="/admin/students"
+            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs inline-flex items-center gap-2 transition-all cursor-pointer"
+          >
+            <Award className="w-3.5 h-3.5" />
+            <span>Generate Certificate for Student</span>
+          </Link>
+          <span className="px-3.5 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-bold rounded-xl shadow-2xs">
             Total Issued: <strong className="text-gray-900 font-extrabold">{certificates.length}</strong>
           </span>
         </div>
@@ -153,7 +160,7 @@ export default function AdminCertificatesPage() {
                     <Award className="w-10 h-10 mx-auto mb-2 text-gray-300 stroke-[1.5]" />
                     <p className="font-semibold text-gray-700">No certificates found</p>
                     <p className="text-xs text-gray-400 mt-1">
-                      To issue a certificate, go to the <Link href="/admin/students" className="text-emerald-700 font-bold hover:underline">Students Table</Link> and click &quot;Upload Certificate&quot; on any student row.
+                      To issue a certificate when a student completes a course, go to the <Link href="/admin/students" className="text-emerald-700 font-bold hover:underline">Students Table</Link> and click &quot;Generate Certificate&quot; on any student row.
                     </p>
                   </td>
                 </tr>

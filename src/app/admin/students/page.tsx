@@ -14,7 +14,12 @@ import {
   Upload, 
   Loader2,
   FileText,
-  AlertCircle
+  AlertCircle,
+  Mail,
+  Copy,
+  Check,
+  ExternalLink,
+  ShieldCheck
 } from 'lucide-react';
 
 interface StudentRecord {
@@ -34,7 +39,6 @@ interface StudentRecord {
 const courseOptions = [
   'ESG Basics for Fashion & Manufacturing Supply Chains',
   'Carbon Markets & I-RECs Fundamentals',
-  'Scope 3 Greenhouse Gas Accounting & Auditing',
 ];
 
 export default function AdminStudentsPage() {
@@ -63,6 +67,15 @@ export default function AdminStudentsPage() {
   const [certUploading, setCertUploading] = useState(false);
   const [certError, setCertError] = useState<string | null>(null);
   const [certSuccess, setCertSuccess] = useState<string | null>(null);
+  const [createdCertificate, setCreatedCertificate] = useState<{
+    id: string;
+    serial: string;
+    courseTitle: string;
+    score: string;
+    learnerName: string;
+    verificationSlug?: string;
+  } | null>(null);
+  const [copiedCertUrl, setCopiedCertUrl] = useState(false);
 
   const generateCertSerial = () => {
     const randomCode = Math.random().toString(36).substring(2, 7).toUpperCase();
@@ -72,12 +85,14 @@ export default function AdminStudentsPage() {
   // Open Certificate Upload Modal for a specific row student
   const handleOpenCertModal = (student: StudentRecord) => {
     setCertStudent(student);
-    setCertCourse('ESG Basics for Fashion & Manufacturing Supply Chains');
+    setCertCourse(student.course || 'ESG Basics for Fashion & Manufacturing Supply Chains');
     setCertScore('95%');
     setCertSerial(generateCertSerial());
     setCertFile(null);
     setCertError(null);
     setCertSuccess(null);
+    setCreatedCertificate(null);
+    setCopiedCertUrl(false);
     setIsCertModalOpen(true);
   };
 
@@ -171,16 +186,14 @@ export default function AdminStudentsPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to upload certificate');
+        throw new Error(data.error || 'Failed to generate certificate');
       }
 
-      setCertSuccess('Certificate issued and uploaded successfully!');
-      setTimeout(() => {
-        setIsCertModalOpen(false);
-        fetchStudents();
-      }, 1000);
+      setCreatedCertificate(data.certificate);
+      setCertSuccess('Official course certificate generated and registered successfully!');
+      fetchStudents();
     } catch (err: unknown) {
-      setCertError(err instanceof Error ? err.message : 'Error uploading certificate');
+      setCertError(err instanceof Error ? err.message : 'Error generating certificate');
     } finally {
       setCertUploading(false);
     }
@@ -204,7 +217,7 @@ export default function AdminStudentsPage() {
         <div>
           <h2 className="text-2xl font-black text-gray-900 tracking-tight">Manage Students & Enrolments</h2>
           <p className="text-sm text-gray-500 mt-0.5">
-            Track learner progress, manage company affiliations, and click <strong>&quot;Upload Certificate&quot;</strong> in any row to issue credentials.
+            Track learner progress, manage company affiliations, and click <strong>&quot;Generate Certificate&quot;</strong> in any row to issue credentials upon course completion.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -282,6 +295,17 @@ export default function AdminStudentsPage() {
                         <div>
                           <div className="font-bold text-gray-900">{student.name}</div>
                           <div className="text-xs text-gray-500">{student.email}</div>
+                          {student.course && (
+                            <div className="mt-1">
+                              <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${
+                                student.course.includes('Carbon')
+                                  ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                  : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                              }`}>
+                                {student.course}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -346,16 +370,16 @@ export default function AdminStudentsPage() {
                         : 'Recently'}
                     </td>
 
-                    {/* Actions: Direct 1-Click Upload Certificate Button */}
+                    {/* Actions: Direct 1-Click Generate Certificate Button */}
                     <td className="py-4 px-6 text-right whitespace-nowrap">
                       <button
                         type="button"
                         onClick={() => handleOpenCertModal(student)}
-                        className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs inline-flex items-center gap-1.5 active:scale-95 cursor-pointer"
-                        title={`Upload certificate for ${student.name}`}
+                        className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition-all shadow-xs inline-flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                        title={`Generate certificate for ${student.name} upon course completion`}
                       >
-                        <Upload className="w-3.5 h-3.5" />
-                        <span>Upload Certificate</span>
+                        <Award className="w-3.5 h-3.5" />
+                        <span>Generate Certificate</span>
                       </button>
                     </td>
 
@@ -454,14 +478,14 @@ export default function AdminStudentsPage() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-200 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-200 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-lg shadow-sm disabled:opacity-50 inline-flex items-center gap-1.5"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-lg shadow-sm disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
                 >
                   {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Save & Enrol</span>
@@ -486,14 +510,14 @@ export default function AdminStudentsPage() {
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
-                  <Upload className="w-4 h-4" />
+                  <Award className="w-4 h-4" />
                 </div>
                 <div>
                   <h3 className="font-extrabold text-slate-950 text-base" style={{ color: '#020617' }}>
-                    Upload Student Certificate
+                    Generate Course Certificate
                   </h3>
                   <p className="text-xs text-slate-500 font-medium" style={{ color: '#64748b' }}>
-                    Issuing credential for learner
+                    Issue verified credential for learner upon course completion
                   </p>
                 </div>
               </div>
@@ -506,177 +530,268 @@ export default function AdminStudentsPage() {
               </button>
             </div>
 
-            {/* Error / Success Alerts */}
+            {/* Error Alert */}
             {certError && (
               <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{certError}</span>
               </div>
             )}
-            {certSuccess && (
-              <div className="mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0" />
-                <span>{certSuccess}</span>
-              </div>
-            )}
 
-            <form onSubmit={handleUploadCertificate} className="space-y-4 pt-4">
-              
-              {/* Auto-filled Learner Card */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800" style={{ color: '#1e293b' }}>
-                  Learner Recipient <span className="text-emerald-600 font-semibold">(Auto-filled from Table)</span>
-                </label>
-                
-                <div className="p-3.5 rounded-2xl border border-emerald-300 bg-emerald-50/80 flex items-center justify-between gap-3 shadow-2xs">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
-                      {certStudent.name.charAt(0).toUpperCase()}
+            {createdCertificate ? (
+              /* Success / Share View */
+              <div className="space-y-4 pt-3 animate-in fade-in">
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <ShieldCheck className="w-5 h-5" />
                     </div>
-                    <div className="min-w-0">
-                      <div className="font-black text-slate-950 text-sm truncate flex items-center gap-2" style={{ color: '#020617' }}>
-                        <span className="truncate">{certStudent.name}</span>
-                        {certStudent.company && (
-                          <span className="text-[10px] font-bold text-emerald-950 bg-emerald-200/90 border border-emerald-300 px-2 py-0.5 rounded-md shrink-0 inline-flex items-center gap-1">
-                            <Building2 className="w-2.5 h-2.5 text-emerald-800" />
-                            <span className="max-w-[130px] truncate">{certStudent.company}</span>
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-slate-600 truncate font-semibold mt-0.5" style={{ color: '#475569' }}>
-                        {certStudent.email}
-                      </div>
+                    <div>
+                      <h4 className="font-extrabold text-emerald-950 text-sm">
+                        Certificate Registered in Database & Dashboard
+                      </h4>
+                      <p className="text-xs text-emerald-700 font-mono font-bold mt-0.5">
+                        Serial: {createdCertificate.serial}
+                      </p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-1 rounded-md shrink-0 border border-emerald-200">
-                    Selected
-                  </span>
+
+                  <div className="text-xs text-emerald-950 bg-white/90 p-3 rounded-xl border border-emerald-200/70 space-y-1">
+                    <p><strong>Learner:</strong> {certStudent.name} ({certStudent.email})</p>
+                    <p><strong>Course:</strong> {createdCertificate.courseTitle}</p>
+                    <p><strong>Score:</strong> {createdCertificate.score}</p>
+                    <p className="text-emerald-700 font-semibold pt-1">
+                      ✓ Visible in Student Dashboard & Admin Registry
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Course Title Selection */}
-              <div className="space-y-1">
-                <label className="block text-xs font-bold text-slate-800" style={{ color: '#1e293b' }}>
-                  Course Title <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={certCourse}
-                  onChange={(e) => setCertCourse(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-primary font-bold text-slate-900"
-                  style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
-                >
-                  {courseOptions.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Score & Serial Number Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1" style={{ color: '#1e293b' }}>
-                    Assessment Score
+                {/* Public Link Box */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-800">
+                    Public Verification Link (Share with Student)
                   </label>
-                  <input
-                    type="text"
-                    value={certScore}
-                    onChange={(e) => setCertScore(e.target.value)}
-                    placeholder="e.g. 95%"
-                    className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-primary font-bold text-emerald-700 bg-white"
-                    style={{ backgroundColor: '#ffffff' }}
-                  />
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-bold text-slate-800" style={{ color: '#1e293b' }}>
-                      Certificate Serial
-                    </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={typeof window !== 'undefined' ? `${window.location.origin}/verify/${createdCertificate.serial}` : `/verify/${createdCertificate.serial}`}
+                      className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-700 select-all"
+                    />
                     <button
                       type="button"
-                      onClick={() => setCertSerial(generateCertSerial())}
-                      className="text-[10px] text-primary hover:underline font-bold cursor-pointer"
+                      onClick={() => {
+                        const url = `${window.location.origin}/verify/${createdCertificate.serial}`;
+                        navigator.clipboard.writeText(url);
+                        setCopiedCertUrl(true);
+                        setTimeout(() => setCopiedCertUrl(false), 2000);
+                      }}
+                      className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl border border-slate-200 shrink-0 inline-flex items-center gap-1.5 cursor-pointer"
                     >
-                      Regenerate
+                      {copiedCertUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-600" />}
+                      <span>{copiedCertUrl ? 'Copied' : 'Copy'}</span>
                     </button>
                   </div>
-                  <input
-                    type="text"
-                    value={certSerial}
-                    onChange={(e) => setCertSerial(e.target.value)}
-                    placeholder="HEST-2026-XXXXX"
-                    className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs sm:text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:border-primary"
-                    style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
-                  />
                 </div>
-              </div>
 
-              {/* File Upload (PDF / Image) */}
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1" style={{ color: '#1e293b' }}>
-                  Upload Certificate File (PDF / Image)
-                </label>
-                <div 
-                  className="border-2 border-dashed border-slate-300 hover:border-primary rounded-2xl p-3.5 text-center bg-slate-50 hover:bg-white transition-all cursor-pointer relative"
-                  style={{ backgroundColor: '#f8fafc' }}
-                >
-                  <input
-                    type="file"
-                    accept=".pdf,.png,.jpg,.jpeg"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setCertFile(e.target.files[0]);
-                      }
+                {/* Email to Student CTA */}
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+                    <Mail className="w-4 h-4 text-primary" />
+                    <span>Send Direct to Student</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Student can log in to their student portal (<strong className="text-primary">/dashboard/certificates</strong>) to view it anytime, or you can send an email with the verification link right now:
+                  </p>
+                  <a
+                    href={`mailto:${certStudent.email}?subject=${encodeURIComponent(`Official Certificate of Completion: ${createdCertificate.courseTitle}`)}&body=${encodeURIComponent(
+                      `Dear ${certStudent.name},\n\nCongratulations! Your official Certificate of Completion for "${createdCertificate.courseTitle}" has been verified and registered by Hestiya University Administration.\n\nExamination Score: ${createdCertificate.score}\nOfficial Serial ID: ${createdCertificate.serial}\n\nYou can access and verify your official credential online anytime via your public verification link:\n${typeof window !== 'undefined' ? window.location.origin : ''}/verify/${createdCertificate.serial}\n\nYou can also log into your Student Dashboard at ${typeof window !== 'undefined' ? window.location.origin : ''}/dashboard/certificates to download your certificate PDF or share it to LinkedIn.\n\nWarm regards,\nHestiya University of Sustainability & Supply Chain Governance`
+                    )}`}
+                    className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold inline-flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+                  >
+                    <Mail className="w-4 h-4" /> Send Email Notification to {certStudent.email}
+                  </a>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                  <Link
+                    href="/admin/certificates"
+                    className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" /> View in Certificates Registry
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCertModalOpen(false);
+                      setCreatedCertificate(null);
                     }}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  {certFile ? (
-                    <div className="flex items-center justify-center gap-2 text-emerald-700 font-bold text-xs">
-                      <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span className="truncate max-w-[260px]">
-                        {certFile.name} ({(certFile.size / 1024).toFixed(1)} KB)
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="space-y-0.5 text-slate-500">
-                      <Upload className="w-5 h-5 mx-auto text-slate-400" />
-                      <p className="text-xs font-bold text-slate-700">
-                        Drop certificate file here or <span className="text-primary font-bold">browse</span>
-                      </p>
-                      <p className="text-[10px] text-slate-400">PDF, PNG, JPG (Max 10MB)</p>
-                    </div>
-                  )}
+                    className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
+                  >
+                    Done & Close
+                  </button>
                 </div>
               </div>
+            ) : (
+              <form onSubmit={handleUploadCertificate} className="space-y-4 pt-4">
+                
+                {/* Auto-filled Learner Card */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-800" style={{ color: '#1e293b' }}>
+                    Learner Recipient <span className="text-emerald-600 font-semibold">(Auto-filled from Table)</span>
+                  </label>
+                  
+                  <div className="p-3.5 rounded-2xl border border-emerald-300 bg-emerald-50/80 flex items-center justify-between gap-3 shadow-2xs">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                        {certStudent.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-black text-slate-950 text-sm truncate flex items-center gap-2" style={{ color: '#020617' }}>
+                          <span className="truncate">{certStudent.name}</span>
+                          {certStudent.company && (
+                            <span className="text-[10px] font-bold text-emerald-950 bg-emerald-200/90 border border-emerald-300 px-2 py-0.5 rounded-md shrink-0 inline-flex items-center gap-1">
+                              <Building2 className="w-2.5 h-2.5 text-emerald-800" />
+                              <span className="max-w-[130px] truncate">{certStudent.company}</span>
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-600 truncate font-semibold mt-0.5" style={{ color: '#475569' }}>
+                          {certStudent.email}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-1 rounded-md shrink-0 border border-emerald-200">
+                      Selected
+                    </span>
+                  </div>
+                </div>
 
-              {/* Modal Actions */}
-              <div className="pt-2 flex gap-2 justify-end border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsCertModalOpen(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-100 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={certUploading}
-                  className="px-5 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-xl shadow-xs disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer"
-                >
-                  {certUploading ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Uploading...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>Issue Certificate</span>
-                    </>
-                  )}
-                </button>
-              </div>
+                {/* Course Title Selection */}
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold text-slate-800" style={{ color: '#1e293b' }}>
+                    Course Title <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={certCourse}
+                    onChange={(e) => setCertCourse(e.target.value)}
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-primary font-bold text-slate-900"
+                    style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
+                  >
+                    {courseOptions.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
 
-            </form>
+                {/* Score & Serial Number Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1" style={{ color: '#1e293b' }}>
+                      Assessment Score
+                    </label>
+                    <input
+                      type="text"
+                      value={certScore}
+                      onChange={(e) => setCertScore(e.target.value)}
+                      placeholder="e.g. 95%"
+                      className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-primary font-bold text-emerald-700 bg-white"
+                      style={{ backgroundColor: '#ffffff' }}
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold text-slate-800" style={{ color: '#1e293b' }}>
+                        Certificate Serial
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setCertSerial(generateCertSerial())}
+                        className="text-[10px] text-primary hover:underline font-bold cursor-pointer"
+                      >
+                        Regenerate
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={certSerial}
+                      onChange={(e) => setCertSerial(e.target.value)}
+                      placeholder="HEST-2026-XXXXX"
+                      className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs sm:text-sm font-mono font-bold text-slate-900 bg-white focus:outline-none focus:border-primary"
+                      style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
+                    />
+                  </div>
+                </div>
+
+                {/* File Upload (PDF / Image) */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 mb-1" style={{ color: '#1e293b' }}>
+                    Upload Certificate File (PDF / Image)
+                  </label>
+                  <div 
+                    className="border-2 border-dashed border-slate-300 hover:border-primary rounded-2xl p-3.5 text-center bg-slate-50 hover:bg-white transition-all cursor-pointer relative"
+                    style={{ backgroundColor: '#f8fafc' }}
+                  >
+                    <input
+                      type="file"
+                      accept=".pdf,.png,.jpg,.jpeg"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setCertFile(e.target.files[0]);
+                        }
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                    {certFile ? (
+                      <div className="flex items-center justify-center gap-2 text-emerald-700 font-bold text-xs">
+                        <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span className="truncate max-w-[260px]">
+                          {certFile.name} ({(certFile.size / 1024).toFixed(1)} KB)
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="space-y-0.5 text-slate-500">
+                        <Upload className="w-5 h-5 mx-auto text-slate-400" />
+                        <p className="text-xs font-bold text-slate-700">
+                          Drop certificate file here or <span className="text-primary font-bold">browse</span>
+                        </p>
+                        <p className="text-[10px] text-slate-400">PDF, PNG, JPG (Max 10MB)</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="pt-2 flex gap-2 justify-end border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setIsCertModalOpen(false)}
+                    className="px-4 py-2 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-100 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={certUploading}
+                    className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    {certUploading ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Generating Certificate...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Award className="w-3.5 h-3.5" />
+                        <span>Generate & Issue Certificate</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+              </form>
+            )}
           </div>
         </div>
       )}

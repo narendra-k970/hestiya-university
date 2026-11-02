@@ -135,7 +135,7 @@ export default function UserCertificatesPage() {
             <span className="hidden sm:inline">Refresh</span>
           </button>
           <Link
-            href="/university"
+            href="/courses"
             className="px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-sm transition-all transform active:scale-95 inline-flex items-center gap-1.5"
           >
             <BookOpen className="w-4 h-4" />
@@ -211,14 +211,14 @@ export default function UserCertificatesPage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link
-              href="/university/esg-basics-supply-chains"
+              href="/courses/esg-basics-supply-chains"
               className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-md transition-all inline-flex items-center gap-2"
             >
               <span>Continue Course Syllabus</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
             <Link
-              href="/university"
+              href="/courses"
               className="px-6 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-xl text-xs font-semibold transition-all"
             >
               Browse All Courses

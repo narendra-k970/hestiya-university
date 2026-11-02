@@ -26,6 +26,20 @@ export async function GET() {
         company: true,
         role: true,
         createdAt: true,
+        enrolments: {
+          select: {
+            id: true,
+            status: true,
+            startedAt: true,
+            course: {
+              select: {
+                id: true,
+                slug: true,
+                title: true,
+              },
+            },
+          },
+        },
         certificates: {
           select: {
             id: true,
@@ -43,9 +57,20 @@ export async function GET() {
       },
     });
 
+    // Format students with convenient direct course title and slug
+    const formattedStudents = students.map((s) => {
+      const primaryEnrolment = s.enrolments && s.enrolments.length > 0 ? s.enrolments[0] : null;
+      return {
+        ...s,
+        course: primaryEnrolment?.course?.title || 'ESG Basics for Fashion & Manufacturing Supply Chains',
+        courseSlug: primaryEnrolment?.course?.slug || 'esg-basics-supply-chains',
+        enrolmentStatus: primaryEnrolment?.status || 'in_progress',
+      };
+    });
+
     return NextResponse.json({
       success: true,
-      students,
+      students: formattedStudents,
     });
   } catch (error: unknown) {
     console.error('Fetch students error:', error);
@@ -72,50 +97,100 @@ export async function POST(request: Request) {
     }
 
     const cleanEmail = email.toLowerCase().trim();
+    const cleanName = name.trim();
+
+    // Resolve course
+    const selectedCourseTitle = (course || '').toLowerCase().includes('carbon')
+      ? 'Carbon Markets & I-RECs Fundamentals'
+      : 'ESG Basics for Fashion & Manufacturing Supply Chains';
+
+    const selectedCourseSlug = (course || '').toLowerCase().includes('carbon')
+      ? 'carbon-markets-irec-fundamentals'
+      : 'esg-basics-supply-chains';
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { email: cleanEmail },
     });
 
-    if (existingUser) {
+    if (user) {
       // Update company and phone if provided
-      const updatedUser = await prisma.user.update({
+      user = await prisma.user.update({
         where: { email: cleanEmail },
         data: {
-          name: name.trim(),
-          phone: phone ? phone.trim() : existingUser.phone,
-          company: company ? company.trim() : existingUser.company,
+          name: cleanName,
+          phone: phone ? phone.trim() : user.phone,
+          company: company ? company.trim() : user.company,
         },
       });
+    } else {
+      // Default secure password for enrolled student
+      const defaultPassword = 'Student@' + Math.floor(1000 + Math.random() * 9000);
+      const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
-      return NextResponse.json({
-        success: true,
-        message: 'Student details updated successfully.',
-        student: updatedUser,
+      user = await prisma.user.create({
+        data: {
+          name: cleanName,
+          email: cleanEmail,
+          phone: phone ? phone.trim() : null,
+          company: company ? company.trim() : null,
+          password: hashedPassword,
+          role: 'LEARNER',
+        },
       });
     }
 
-    // Default secure password for enrolled student
-    const defaultPassword = 'Student@' + Math.floor(1000 + Math.random() * 9000);
-    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-
-    const newStudent = await prisma.user.create({
-      data: {
-        name: name.trim(),
-        email: cleanEmail,
-        phone: phone ? phone.trim() : null,
-        company: company ? company.trim() : null,
-        password: hashedPassword,
-        role: 'LEARNER',
+    // Resolve or create Course
+    let courseRecord = await prisma.course.findFirst({
+      where: {
+        OR: [
+          { slug: selectedCourseSlug },
+          { title: { equals: selectedCourseTitle, mode: 'insensitive' } },
+        ],
       },
     });
+
+    if (!courseRecord) {
+      courseRecord = await prisma.course.create({
+        data: {
+          slug: selectedCourseSlug,
+          title: selectedCourseTitle,
+          hook: 'Professional forensic supply chain and sustainability audit track.',
+          description: 'Comprehensive curriculum designed for auditors, sustainability leaders, and supply chain managers.',
+          audience: 'Supply chain directors, sustainability controllers, procurement executives',
+          duration: selectedCourseSlug.includes('carbon') ? '5 – 6.5 Hours' : '4.5 – 6 Hours',
+          ilos: JSON.stringify(['Master forensic auditing', 'Understand regulatory frameworks', 'Avoid greenwashing']),
+          status: 'published',
+        },
+      });
+    }
+
+    // Ensure Enrolment exists
+    let enrolment = await prisma.enrolment.findFirst({
+      where: {
+        userId: user.id,
+        courseId: courseRecord.id,
+      },
+    });
+
+    if (!enrolment) {
+      enrolment = await prisma.enrolment.create({
+        data: {
+          userId: user.id,
+          courseId: courseRecord.id,
+          status: 'in_progress',
+        },
+      });
+    }
 
     return NextResponse.json({
       success: true,
       message: 'Student enrolled successfully!',
-      student: newStudent,
-      tempPassword: defaultPassword,
+      student: {
+        ...user,
+        course: courseRecord.title,
+        courseSlug: courseRecord.slug,
+      },
     });
   } catch (error: unknown) {
     console.error('Enrol student error:', error);

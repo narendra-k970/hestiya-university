@@ -25,59 +25,10 @@ import {
   X
 } from 'lucide-react';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 
 export default function Home() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-
-  // Contact / Inquiry Popup State
-  const [isContactOpen, setIsContactOpen] = useState(false);
-  const [contactSubmitting, setContactSubmitting] = useState(false);
-  const [contactSuccess, setContactSuccess] = useState(false);
-  const [contactError, setContactError] = useState<string | null>(null);
-  const [contactData, setContactData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    course: 'ESG Basics for Fashion & Manufacturing Supply Chains',
-    message: '',
-  });
-
-  const handleContactSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setContactError(null);
-    setContactSubmitting(true);
-    try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contactData),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setContactSuccess(true);
-        setTimeout(() => {
-          setIsContactOpen(false);
-          setContactSuccess(false);
-          setContactData({
-            name: '',
-            email: '',
-            phone: '',
-            company: '',
-            course: 'ESG Basics for Fashion & Manufacturing Supply Chains',
-            message: '',
-          });
-        }, 2000);
-      } else {
-        setContactError(data.error || 'Failed to submit inquiry.');
-      }
-    } catch {
-      setContactError('An error occurred. Please try again.');
-    } finally {
-      setContactSubmitting(false);
-    }
-  };
 
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
@@ -173,112 +124,7 @@ export default function Home() {
       >
         
         {/* Navigation Bar */}
-        <header className="sticky top-0 z-50 w-full bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#E7E2D7] transition-all">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex justify-between items-center gap-4 flex-nowrap">
-            
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 group shrink-0 whitespace-nowrap">
-              <Image 
-                src="/images/logo.png" 
-                alt="Hestiya Logo" 
-                width={36} 
-                height={36} 
-                className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-sm transition-transform group-hover:scale-105" 
-                priority 
-              />
-              <span className="text-xl sm:text-2xl font-black tracking-tight text-stone-950 whitespace-nowrap">
-                Hestiya<span className="text-emerald-700 font-medium">University</span>
-              </span>
-            </Link>
-
-            {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-semibold text-stone-700 flex-nowrap shrink-0">
-              <Link href="/university" className="whitespace-nowrap hover:text-emerald-700 transition-colors">
-                Courses
-              </Link>
-              <a href="#about" className="whitespace-nowrap hover:text-emerald-700 transition-colors">
-                About
-              </a>
-              <button 
-                onClick={() => setIsContactOpen(true)}
-                className="whitespace-nowrap hover:text-emerald-700 transition-colors cursor-pointer"
-              >
-                Talk to Us
-              </button>
-            </nav>
-
-            {/* Desktop Actions */}
-            <div className="hidden sm:flex items-center gap-2 xl:gap-3 shrink-0 flex-nowrap">
-              <Link 
-                href="/login" 
-                className="whitespace-nowrap text-sm font-semibold text-stone-800 hover:text-emerald-700 px-3 py-2 transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link 
-                href="/university" 
-                className="whitespace-nowrap text-sm font-bold bg-[#F59E0B] hover:bg-[#D97706] text-stone-950 px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all transform active:scale-95 inline-flex items-center gap-1.5"
-              >
-                <span>Explore Courses</span>
-                <ArrowRight className="w-4 h-4 shrink-0" />
-              </Link>
-            </div>
-
-            {/* Mobile Hamburger Button */}
-            <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg text-stone-800 hover:bg-stone-200/50 shrink-0"
-              aria-label="Toggle Menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-
-          {/* Mobile Menu Dropdown */}
-          {mobileMenuOpen && (
-            <div className="lg:hidden border-b border-[#E7E2D7] bg-[#FAF8F5] px-6 py-4 space-y-3">
-              <Link 
-                href="/university" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-sm font-semibold text-stone-800 hover:text-emerald-700"
-              >
-                Courses
-              </Link>
-              <a 
-                href="#about" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-sm font-semibold text-stone-800 hover:text-emerald-700"
-              >
-                About
-              </a>
-              <button 
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsContactOpen(true);
-                }}
-                className="block w-full text-left py-2 text-sm font-semibold text-stone-800 hover:text-emerald-700 cursor-pointer"
-              >
-                Talk to Us
-              </button>
-              <div className="pt-3 border-t border-[#E7E2D7] flex flex-col gap-2">
-                <Link 
-                  href="/login" 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2.5 text-sm font-semibold text-stone-800 bg-white border border-[#DDD6C8] rounded-xl"
-                >
-                  Sign In
-                </Link>
-                <Link 
-                  href="/university" 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2.5 text-sm font-bold bg-[#F59E0B] text-stone-950 rounded-xl"
-                >
-                  Explore Courses
-                </Link>
-              </div>
-            </div>
-          )}
-        </header>
+        <Header />
 
         {/* 
           Hero Section (Terra.do Inspired: High Energy, Editorial, Human-Centric) 
@@ -311,13 +157,13 @@ export default function Home() {
             {/* Dual CTAs (Amber Primary + Warm Stone Outline) */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3">
               <Link 
-                href="/university" 
+                href="/courses" 
                 className="w-full sm:w-auto px-8 py-4 bg-[#F59E0B] hover:bg-[#D97706] text-stone-950 rounded-xl font-bold text-base shadow-[0_4px_16px_rgba(245,158,11,0.35)] transition-all transform hover:-translate-y-0.5 inline-flex items-center justify-center gap-2"
               >
                 Explore All Courses <ArrowRight className="w-4 h-4" />
               </Link>
               <Link 
-                href="/university/esg-basics-supply-chains" 
+                href="/courses/esg-basics-supply-chains" 
                 className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-stone-50 text-stone-900 border border-[#DDD6C8] rounded-xl font-semibold text-base shadow-xs hover:border-stone-400 transition-all inline-flex items-center justify-center gap-2"
               >
                 View Flagship Syllabus
@@ -456,13 +302,13 @@ export default function Home() {
                 {/* Card CTA */}
                 <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <Link 
-                    href="/university/esg-basics-supply-chains" 
+                    href="/courses/esg-basics-supply-chains" 
                     className="px-6 py-3.5 bg-stone-950 hover:bg-emerald-900 text-white font-bold rounded-xl text-sm transition-all text-center inline-flex items-center justify-center gap-2"
                   >
                     Start Flagship Course <ArrowRight className="w-4 h-4" />
                   </Link>
                   <Link 
-                    href="/university/esg-basics-supply-chains" 
+                    href="/courses/esg-basics-supply-chains" 
                     className="px-6 py-3.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold rounded-xl text-sm transition-all text-center"
                   >
                     View Full 7-Module Syllabus
@@ -609,7 +455,7 @@ export default function Home() {
               </h2>
             </div>
             <Link 
-              href="/university" 
+              href="/courses" 
               className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-800 hover:text-emerald-950 hover:underline"
             >
               Browse complete syllabus archive <ChevronRight className="w-4 h-4" />
@@ -670,12 +516,18 @@ export default function Home() {
                 </div>
 
                 {/* Bottom Action Footer */}
-                <div className="p-8 pt-0">
+                <div className="p-8 pt-0 flex flex-col sm:flex-row gap-2.5">
                   <Link 
-                    href={`/university/${course.slug}`}
-                    className="w-full py-3.5 px-6 rounded-xl bg-stone-900 hover:bg-emerald-800 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2"
+                    href={`/courses/${course.slug}`}
+                    className="w-full py-3 px-4 rounded-xl border border-stone-300 hover:bg-stone-100 text-stone-800 font-semibold text-xs sm:text-sm transition-colors text-center cursor-pointer"
                   >
-                    Enroll in Program <ArrowRight className="w-4 h-4" />
+                    View Syllabus
+                  </Link>
+                  <Link 
+                    href={`/register?course=${course.slug}`}
+                    className="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    Enroll Now <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
 
@@ -901,9 +753,9 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => toggleFaq(index)}
-                    className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 font-bold text-stone-900 hover:text-emerald-800 transition-colors cursor-pointer select-none"
+                    className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 text-stone-800 hover:text-emerald-800 transition-colors cursor-pointer select-none"
                   >
-                    <span className="text-base sm:text-lg cursor-pointer">{faq.question}</span>
+                    <span className="text-base sm:text-lg font-medium text-stone-900 leading-snug cursor-pointer">{faq.question}</span>
                     <ChevronDown className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 text-stone-500 cursor-pointer ${isOpen ? 'rotate-180 text-emerald-700' : ''}`} />
                   </button>
                   {isOpen && (
@@ -944,14 +796,14 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link 
-              href="/university" 
-              className="w-full sm:w-auto px-8 py-4 bg-[#F59E0B] hover:bg-[#D97706] text-stone-950 font-bold rounded-xl text-base shadow-lg transition-all transform hover:-translate-y-0.5 inline-flex items-center justify-center gap-2"
+              href="/register" 
+              className="w-full sm:w-auto px-8 py-4 bg-[#F59E0B] hover:bg-[#D97706] text-stone-950 font-bold rounded-xl text-base shadow-lg transition-all transform hover:-translate-y-0.5 inline-flex items-center justify-center gap-2 cursor-pointer"
             >
-              Explore Course Catalog <ArrowRight className="w-4 h-4" />
+              Enroll & Register Now <ArrowRight className="w-4 h-4" />
             </Link>
             <Link 
               href="/login" 
-              className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold rounded-xl text-base transition-all inline-flex items-center justify-center"
+              className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold rounded-xl text-base transition-all inline-flex items-center justify-center cursor-pointer"
             >
               Sign In to Student Portal
             </Link>
@@ -966,164 +818,6 @@ export default function Home() {
 
         </div>
       </section>
-
-      {/* Contact & Enterprise Inquiry Modal */}
-      {isContactOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-stone-200 animate-in fade-in duration-200 my-auto">
-            
-            <div className="flex items-center justify-between pb-4 border-b border-stone-200">
-              <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                  Admissions & Enterprise
-                </span>
-                <h3 className="text-xl font-extrabold text-stone-950 mt-1">
-                  Contact Academic Team
-                </h3>
-              </div>
-              <button 
-                onClick={() => setIsContactOpen(false)}
-                className="text-stone-400 hover:text-stone-700 p-1.5 rounded-xl hover:bg-stone-100 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {contactSuccess ? (
-              <div className="py-8 text-center space-y-3">
-                <div className="w-12 h-12 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-                <h4 className="text-lg font-bold text-stone-950">Inquiry Received!</h4>
-                <p className="text-xs text-stone-600 max-w-xs mx-auto">
-                  Thank you for reaching out. One of our sustainability faculty advisors will get in touch with you shortly.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleContactSubmit} className="space-y-4 pt-4">
-                
-                {contactError && (
-                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
-                    {contactError}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div>
-                    <label className="block text-xs font-bold text-stone-700 mb-1">
-                      Full Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={contactData.name}
-                      onChange={(e) => setContactData({ ...contactData, name: e.target.value })}
-                      placeholder="e.g. Rachel Adams"
-                      className="w-full px-3.5 py-2 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-700 font-medium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-stone-700 mb-1">
-                      Work Email <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={contactData.email}
-                      onChange={(e) => setContactData({ ...contactData, email: e.target.value })}
-                      placeholder="rachel@company.com"
-                      className="w-full px-3.5 py-2 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-700 font-medium"
-                    />
-                  </div>
-                </div>
-
-                {/* Company / Organization (Requested) */}
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">
-                    Company / Organization
-                  </label>
-                  <input
-                    type="text"
-                    value={contactData.company}
-                    onChange={(e) => setContactData({ ...contactData, company: e.target.value })}
-                    placeholder="e.g. Zara, Arvind Mills, EcoAudit Partners..."
-                    className="w-full px-3.5 py-2 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-700 font-medium"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div>
-                    <label className="block text-xs font-bold text-stone-700 mb-1">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      value={contactData.phone}
-                      onChange={(e) => setContactData({ ...contactData, phone: e.target.value })}
-                      placeholder="+91 98765 43210"
-                      className="w-full px-3.5 py-2 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-700 font-medium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-stone-700 mb-1">
-                      Program of Interest
-                    </label>
-                    <select
-                      value={contactData.course}
-                      onChange={(e) => setContactData({ ...contactData, course: e.target.value })}
-                      className="w-full px-3.5 py-2 border border-stone-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-700 font-medium"
-                    >
-                      <option value="ESG Basics for Fashion & Manufacturing Supply Chains">
-                        ESG Basics for Supply Chains
-                      </option>
-                      <option value="Carbon Markets & I-RECs Fundamentals">
-                        Carbon Markets & I-RECs
-                      </option>
-                      <option value="Enterprise Cohort Training">
-                        Enterprise Team Training
-                      </option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">
-                    Message / Inquiries
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={contactData.message}
-                    onChange={(e) => setContactData({ ...contactData, message: e.target.value })}
-                    placeholder="Tell us about your team size, supply chain audit goals, or questions..."
-                    className="w-full px-3.5 py-2 border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-700 font-medium"
-                  />
-                </div>
-
-                <div className="pt-2 flex items-center justify-end gap-3 border-t border-stone-100">
-                  <button
-                    type="button"
-                    onClick={() => setIsContactOpen(false)}
-                    className="px-4 py-2.5 text-xs font-bold text-stone-700 hover:bg-stone-100 rounded-xl"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={contactSubmitting}
-                    className="px-6 py-2.5 bg-[#F59E0B] hover:bg-[#D97706] text-stone-950 font-bold text-xs rounded-xl shadow-xs transition-all disabled:opacity-50"
-                  >
-                    {contactSubmitting ? 'Sending...' : 'Submit Inquiry'}
-                  </button>
-                </div>
-
-              </form>
-            )}
-
-          </div>
-        </div>
-      )}
 
       {/* Footer */}
       <Footer dark={false} />

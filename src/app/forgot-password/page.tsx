@@ -95,9 +95,11 @@ export default function ForgotPasswordPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md my-auto py-4">
         {/* Header */}
         <div className="text-center mb-4">
-          <div className="flex justify-center text-2xl font-black tracking-tighter items-center gap-2 mb-2">
+          <div className="flex justify-center text-2xl font-black tracking-tight items-center gap-2 mb-2">
             <Image src="/images/logo.png" alt="Hestiya Logo" width={36} height={36} className="w-9 h-9 object-contain drop-shadow-sm" priority />
-            <span className="text-gray-900">Hestiya</span>
+            <span className="text-gray-900">
+              Hestiya<span className="text-emerald-700 font-medium">University</span>
+            </span>
           </div>
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-2">
             <KeyRound className="w-6 h-6" />
@@ -220,7 +222,7 @@ export default function ForgotPasswordPage() {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 text-sm font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                className="w-full flex items-center justify-center py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 text-sm font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none transition-all hover:-translate-y-0.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
                 {loading ? (
                   <>

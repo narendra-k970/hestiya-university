@@ -16,6 +16,7 @@ import {
   FileText
 } from 'lucide-react';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 
 export default async function CertificateVerificationPage({
   params,
@@ -48,31 +49,8 @@ export default async function CertificateVerificationPage({
   return (
     <div className="min-h-screen bg-[#F7F5F0] font-sans text-stone-900 flex flex-col justify-between selection:bg-amber-300">
       
-      {/* Top Header */}
-      <header className="w-full bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#E7E2D7]">
-        <div className="max-w-6xl mx-auto px-6 h-20 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-2.5">
-            <Image src="/images/logo.png" alt="Hestiya" width={34} height={34} className="w-8 h-8 object-contain" />
-            <span className="text-xl font-black tracking-tight text-stone-950">
-              Hestiya<span className="text-emerald-700 font-medium">University</span>
-            </span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="text-xs font-bold text-stone-700 hover:text-emerald-800 px-3 py-2"
-            >
-              Student Portal
-            </Link>
-            <Link
-              href="/university"
-              className="text-xs font-bold bg-[#F59E0B] hover:bg-[#D97706] text-stone-950 px-4 py-2 rounded-xl shadow-xs"
-            >
-              Explore Courses
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* Top Universal Header */}
+      <Header />
 
       {/* Main Verification Card Area */}
       <main className="max-w-4xl mx-auto px-6 py-12 lg:py-16 w-full flex-1">
@@ -192,7 +170,7 @@ export default async function CertificateVerificationPage({
                     </a>
                   ) : null}
                   <Link
-                    href="/university"
+                    href="/courses"
                     className="px-6 py-3 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl text-xs transition-all inline-flex items-center gap-2"
                   >
                     <span>View Course Details</span>

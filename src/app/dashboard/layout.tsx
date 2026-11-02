@@ -159,19 +159,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               )}
             </Link>
             <Link 
-              href="/university" 
+              href="/courses" 
               onClick={() => setIsMobileOpen(false)}
               className={`group flex items-center justify-between px-3.5 py-3 text-sm rounded-xl transition-all ${
-                pathname?.startsWith('/dashboard/courses') || pathname?.startsWith('/university')
+                pathname?.startsWith('/dashboard/courses') || pathname?.startsWith('/courses')
                   ? 'bg-emerald-50 text-emerald-900 font-extrabold border-l-4 border-emerald-600 shadow-2xs' 
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-semibold'
               }`}
             >
               <div className="flex items-center min-w-0">
-                <BookOpen className={`mr-3 flex-shrink-0 h-5 w-5 ${pathname?.startsWith('/university') ? 'text-emerald-700 stroke-[2.5]' : 'text-gray-400 group-hover:text-primary'}`} />
+                <BookOpen className={`mr-3 flex-shrink-0 h-5 w-5 ${pathname?.startsWith('/courses') ? 'text-emerald-700 stroke-[2.5]' : 'text-gray-400 group-hover:text-primary'}`} />
                 <span>Courses</span>
               </div>
-              {(pathname?.startsWith('/dashboard/courses') || pathname?.startsWith('/university')) && (
+              {(pathname?.startsWith('/dashboard/courses') || pathname?.startsWith('/courses')) && (
                 <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0 ml-2" />
               )}
             </Link>

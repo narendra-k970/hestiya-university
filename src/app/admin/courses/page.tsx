@@ -88,7 +88,7 @@ export default function AdminCoursesPage() {
                       </div>
                       <div>
                         <div className="font-bold text-gray-900 leading-snug">{course.title}</div>
-                        <div className="text-xs text-gray-400 font-mono">/university/{course.slug}</div>
+                        <div className="text-xs text-gray-400 font-mono">/courses/{course.slug}</div>
                       </div>
                     </div>
                   </td>
@@ -112,7 +112,7 @@ export default function AdminCoursesPage() {
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link 
-                        href={`/university/${course.slug}`}
+                        href={`/courses/${course.slug}`}
                         target="_blank"
                         className="p-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
                         title="View Public Page"

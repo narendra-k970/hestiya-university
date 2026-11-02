@@ -158,7 +158,7 @@ export default function DashboardHome() {
                   <Clock className="w-4 h-4" /> Last active 2 days ago
                 </span>
                 <Link
-                  href="/university/esg-basics-supply-chains"
+                  href="/courses/esg-basics-supply-chains"
                   className="w-full sm:w-auto px-6 py-3 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-lg shadow-gray-900/20"
                 >
                   <PlayCircle className="w-5 h-5" /> Resume Course
@@ -200,7 +200,7 @@ export default function DashboardHome() {
                   </p>
                 </div>
                 <Link
-                  href="/university"
+                  href="/courses"
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline pt-1"
                 >
                   View Course Catalog <ArrowRight className="w-3.5 h-3.5" />
@@ -292,7 +292,7 @@ export default function DashboardHome() {
 
           {/* Explore More Placeholder */}
           <Link 
-            href="/university" 
+            href="/courses" 
             className="block bg-primary/5 border border-primary/20 rounded-[2rem] p-8 text-center hover:bg-primary/10 transition-colors border-dashed"
           >
             <BookOpen className="w-8 h-8 text-primary mx-auto mb-3" />
@@ -329,7 +329,7 @@ export default function DashboardHome() {
               Complete the Module 3 Assessment to unlock the next chapter on Labour Risks and earn your certificate.
             </p>
             <Link 
-              href="/university/esg-basics-supply-chains" 
+              href="/courses/esg-basics-supply-chains" 
               className="w-full py-3 bg-white text-blue-900 font-bold rounded-xl text-sm hover:bg-blue-50 transition-colors shadow-md relative z-10 flex justify-center items-center gap-2"
             >
               Go to Assessment <ArrowRight className="w-4 h-4" />

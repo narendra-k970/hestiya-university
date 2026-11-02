@@ -189,7 +189,7 @@ export default function AdminDashboardPage() {
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link 
-                        href={`/university/${course.slug}`}
+                        href={`/courses/${course.slug}`}
                         target="_blank"
                         className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
                         title="View Live Course"

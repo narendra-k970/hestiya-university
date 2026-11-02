@@ -179,7 +179,7 @@ export default function CreateCoursePage() {
             </Link>
             <button
               type="submit"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 cursor-pointer"
             >
               <Save className="w-4 h-4" /> Save Course
             </button>

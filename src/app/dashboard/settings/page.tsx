@@ -368,7 +368,7 @@ export default function SettingsPage() {
                 <button
                   type="submit"
                   disabled={profileLoading}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl shadow-md shadow-primary/20 text-xs sm:text-sm font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl shadow-md shadow-primary/20 text-xs sm:text-sm font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none transition-all hover:-translate-y-0.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {profileLoading ? (
                     <>
@@ -514,7 +514,7 @@ export default function SettingsPage() {
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className="w-full sm:w-auto flex items-center justify-center py-2.5 px-6 rounded-xl shadow-md shadow-primary/20 text-xs sm:text-sm font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto flex items-center justify-center py-2.5 px-6 rounded-xl shadow-md shadow-primary/20 text-xs sm:text-sm font-bold text-white bg-primary hover:bg-primary-dark focus:outline-none transition-all hover:-translate-y-0.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {passwordLoading ? (
                     <>
